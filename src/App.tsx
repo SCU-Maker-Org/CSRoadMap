@@ -31,7 +31,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-950">
+    <div className="min-h-screen bg-[#e7ddc5] text-slate-950">
       <Header currentPage={page} onNavigate={navigate} />
       {page === "home" ? (
         <HomePage onStart={() => navigate("roadmap")} />

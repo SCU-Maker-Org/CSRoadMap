@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export function Header({ currentPage, onNavigate }: HeaderProps) {
   return (
-    <header className="border-b border-slate-200 bg-white/95">
+    <header className="border-b border-stone-300 bg-[#fffaf0]/95">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <button
           type="button"
@@ -23,8 +23,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             onClick={() => onNavigate("home")}
             className={`rounded-md px-3 py-2 text-sm font-medium transition ${
               currentPage === "home"
-                ? "bg-blue-50 text-blue-700"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                ? "bg-red-50 text-red-700"
+                : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
             }`}
           >
             首页
@@ -34,8 +34,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             onClick={() => onNavigate("roadmap")}
             className={`rounded-md px-3 py-2 text-sm font-medium transition ${
               currentPage === "roadmap"
-                ? "bg-blue-50 text-blue-700"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                ? "bg-red-50 text-red-700"
+                : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
             }`}
           >
             Roadmap

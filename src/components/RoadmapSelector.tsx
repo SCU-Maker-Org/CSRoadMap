@@ -12,8 +12,8 @@ export function RoadmapSelector({
   onSelect,
 }: RoadmapSelectorProps) {
   return (
-    <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-950">路线选择</h2>
+    <aside className="rounded-lg border border-stone-300 bg-[#fffaf0] p-4 shadow-sm">
+      <h2 className="text-sm font-semibold text-stone-950">路线选择</h2>
       <div className="mt-4 grid gap-2">
         {roadmaps.map((roadmap) => {
           const isSelected = roadmap.id === selectedRoadmapId;
@@ -25,14 +25,14 @@ export function RoadmapSelector({
               onClick={() => onSelect(roadmap.id)}
               className={`rounded-md border px-3 py-3 text-left transition ${
                 isSelected
-                  ? "border-blue-500 bg-blue-50 text-blue-800"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                  ? "border-red-500 bg-red-50 text-red-800"
+                  : "border-stone-300 bg-[#fbf4df] text-stone-700 hover:border-stone-400 hover:bg-[#f6efd9]"
               }`}
             >
               <span className="block text-sm font-semibold">
                 {roadmap.title}
               </span>
-              <span className="mt-1 block text-xs leading-5 text-slate-500">
+              <span className="mt-1 block text-xs leading-5 text-stone-600">
                 {roadmap.description}
               </span>
             </button>

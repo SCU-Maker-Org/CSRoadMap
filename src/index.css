@@ -34,3 +34,37 @@ button {
 .react-flow__controls-button {
   border-color: #e2e8f0;
 }
+
+.roadmap-map-surface {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(127, 116, 90, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127, 116, 90, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 20% 12%, rgba(120, 113, 94, 0.18), transparent 22%),
+    radial-gradient(circle at 82% 72%, rgba(120, 113, 94, 0.14), transparent 24%),
+    #e7ddc5;
+  background-size:
+    92px 92px,
+    92px 92px,
+    100% 100%,
+    100% 100%,
+    auto;
+}
+
+.roadmap-map-surface::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, transparent 0 48%, rgba(101, 86, 58, 0.15) 49% 50%, transparent 51%),
+    linear-gradient(transparent 0 32%, rgba(101, 86, 58, 0.12) 33% 34%, transparent 35% 66%, rgba(101, 86, 58, 0.12) 67% 68%, transparent 69%);
+  mix-blend-mode: multiply;
+}
+
+.roadmap-map-surface .react-flow {
+  position: relative;
+  z-index: 2;
+}
