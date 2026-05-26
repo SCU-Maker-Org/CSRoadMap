@@ -6,15 +6,6 @@ interface RoadmapSelectorProps {
   onSelect: (id: string) => void;
 }
 
-const chapterIcons: Record<string, string> = {
-  common: "📖",
-  frontend: "🎨",
-  backend: "⚙️",
-  ai: "🤖",
-  security: "🛡️",
-  algorithm: "🏆",
-};
-
 export function RoadmapSelector({
   roadmaps,
   selectedRoadmapId,
@@ -38,7 +29,7 @@ export function RoadmapSelector({
               className={`chapter-btn ${isSelected ? "chapter-btn-active" : ""}`}
             >
               <span className="chapter-btn-icon">
-                {chapterIcons[roadmap.id] ?? "📋"}
+                {roadmap.icon ?? "📋"}
               </span>
               <div className="min-w-0">
                 <span className="block text-[13px] font-semibold truncate">

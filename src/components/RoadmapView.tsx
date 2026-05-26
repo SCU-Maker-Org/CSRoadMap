@@ -132,7 +132,7 @@ export function RoadmapView({
             stage: node.stage,
             status,
             selected: selectedNodeId === node.id,
-            icon: pickIcon(node.title),
+            icon: node.icon ?? pickIcon(node.title),
           },
           draggable: false,
         };
@@ -164,13 +164,7 @@ export function RoadmapView({
   return (
     <section className="flex-1 flex flex-col min-h-0 mc-panel overflow-hidden">
       <div className="px-4 py-3 border-b-2 border-[#0a0a0a] bg-[#151515] flex items-center gap-3">
-        <span className="text-lg">
-          {roadmap.id === "common" ? "📖" :
-           roadmap.id === "frontend" ? "🎨" :
-           roadmap.id === "backend" ? "⚙️" :
-           roadmap.id === "ai" ? "🤖" :
-           roadmap.id === "security" ? "🛡️" : "🏆"}
-        </span>
+        <span className="text-lg">{roadmap.icon ?? "📋"}</span>
         <div>
           <h2 className="text-sm font-bold text-[#c8c8c8]">{roadmap.title}</h2>
           <p className="text-[11px] text-[#666]">{roadmap.description}</p>

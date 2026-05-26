@@ -58,7 +58,15 @@ src/
   App.tsx                 # 路由 & 页面切换
   index.css               # 全局样式 & Minecraft 主题变量
   types/roadmap.ts        # 类型定义
-  data/roadmaps.ts        # 路线数据（6条）
+  data/
+    roadmaps.ts           # 路线加载器（自动扫描 JSON 文件）
+    roadmaps/             # 路线数据（每个路线一个 JSON 文件）
+      common.json
+      frontend.json
+      backend.json
+      ai.json
+      security.json
+      algorithm.json
   hooks/useProgress.ts    # 进度管理 hook
   pages/
     HomePage.tsx          # 首页
@@ -69,33 +77,54 @@ src/
     RoadmapView.tsx       # 节点图谱渲染
     SkillDetailPanel.tsx  # 技能详情弹窗
     ProgressSummary.tsx   # 底部进度条
+public/
+  roadmap-editor.html     # 可视化路线编辑器（可直接在浏览器打开）
 ```
 
 ## 添加新路线
 
-编辑 `src/data/roadmaps.ts`，按以下格式添加：
+### 方法一：使用可视化编辑器（推荐）
 
-```typescript
+1. 在浏览器中打开 `public/roadmap-editor.html`（可直接双击打开，无需服务器）
+2. 填写路线基本信息和节点列表
+3. 点击「下载 .json 文件」，将文件放入 `src/data/roadmaps/` 目录
+4. 重新运行 `npm run dev`，新路线自动出现在左侧面板
+
+### 方法二：手动创建 JSON 文件
+
+在 `src/data/roadmaps/` 目录下新建一个 `.json` 文件（文件名任意），格式如下：
+
+```json
 {
-  id: "my-roadmap",
-  title: "我的路线",
-  description: "路线说明",
-  nodes: [
+  "id": "my-roadmap",
+  "title": "我的路线",
+  "description": "路线说明",
+  "icon": "📖",
+  "nodes": [
     {
-      id: "my-node-1",
-      title: "节点名称",
-      description: "节点描述",
-      stage: "阶段名称",
-      x: 0, y: 100,
+      "id": "my-node-1",
+      "title": "节点名称",
+      "description": "节点描述",
+      "stage": "阶段名称"
     },
-  ],
-  edges: [
-    { source: "my-node-1", target: "my-node-2" },
-  ],
+    {
+      "id": "my-node-2",
+      "title": "第二个节点",
+      "description": "节点描述",
+      "stage": "进阶"
+    }
+  ]
 }
 ```
 
-节点自动按 3 列网格布局（每列间距 200px，每行间距 180px）。
+**说明：**
+- `id` — 英文短标识，只用小写字母和连字符
+- `title` — 中文显示名称
+- `icon` — 任意 emoji，显示在左侧面板和画布标题中（可选，默认 📋）
+- `nodes` — 按学习顺序从上到下排列，**节点在数组中的顺序决定线条连接方向**
+- `stage` — 可选阶段标签，显示在节点下方（如：入门 / 进阶 / 实践 / 大一上）
+- **无需手写 `edges`** — 系统自动按节点顺序生成连接线
+- **无需手写 `x` / `y` 坐标** — 节点自动按 3 列蛇形网格布局
 
 ## 修改主题颜色
 
