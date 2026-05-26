@@ -16,14 +16,12 @@ export default function App() {
     function handlePopState() {
       setPage(getInitialPage());
     }
-
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   function navigate(nextPage: Page) {
     const nextPath = nextPage === "roadmap" ? "/roadmap" : "/";
-
     setPage(nextPage);
     if (window.location.pathname !== nextPath) {
       window.history.pushState(null, "", nextPath);
@@ -31,13 +29,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e7ddc5] text-slate-950">
+    <div className="min-h-screen bg-[#0d0d0d] text-[#c8c8c8] flex flex-col">
       <Header currentPage={page} onNavigate={navigate} />
-      {page === "home" ? (
-        <HomePage onStart={() => navigate("roadmap")} />
-      ) : (
-        <RoadmapPage />
-      )}
+      <div className="flex-1 flex flex-col">
+        {page === "home" ? (
+          <HomePage onStart={() => navigate("roadmap")} />
+        ) : (
+          <RoadmapPage />
+        )}
+      </div>
     </div>
   );
 }

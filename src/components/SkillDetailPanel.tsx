@@ -9,92 +9,125 @@ interface SkillDetailPanelProps {
   node: RoadmapNode | null;
   status: NodeStatus;
   onStatusChange: (status: NodeStatus) => void;
+  onClose: () => void;
 }
 
-const statusButtonClasses: Record<NodeStatus, string> = {
-  not_started: "border-stone-300 bg-[#fbf4df] text-stone-700",
-  learning: "border-blue-500 bg-blue-50 text-blue-700",
-  completed: "border-green-500 bg-green-50 text-green-700",
+const statusColors: Record<NodeStatus, string> = {
+  not_started: "bg-[#5a5a5a] border-[#3a3a3a] text-[#999]",
+  learning: "bg-[#7a6820] border-[#5a4a10] text-[#c8a84e]",
+  completed: "bg-[#2d5a24] border-[#1a3a14] text-[#4a8c3f]",
 };
 
-const activeRingClasses: Record<NodeStatus, string> = {
-  not_started: "ring-slate-300",
-  learning: "ring-blue-300",
-  completed: "ring-green-300",
+const statusRingColors: Record<NodeStatus, string> = {
+  not_started: "ring-[#5a5a5a]",
+  learning: "ring-[#c8a84e]",
+  completed: "ring-[#4a8c3f]",
+};
+
+const statusIcons: Record<NodeStatus, string> = {
+  not_started: "⬜",
+  learning: "🟨",
+  completed: "🟩",
 };
 
 export function SkillDetailPanel({
   node,
   status,
   onStatusChange,
+  onClose,
 }: SkillDetailPanelProps) {
-  if (!node) {
-    return (
-      <aside className="rounded-lg border border-stone-300 bg-[#fffaf0] p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-stone-950">节点详情</h2>
-        <div className="mt-6 rounded-md border border-dashed border-stone-300 bg-[#fbf4df] px-4 py-8 text-center text-sm text-stone-600">
-          点击一个节点查看详情
-        </div>
-      </aside>
-    );
-  }
+  if (!node) return null;
 
   return (
-    <aside className="rounded-lg border border-stone-300 bg-[#fffaf0] p-5 shadow-sm">
-      <p className="text-sm font-semibold text-stone-950">节点详情</p>
-      <h2 className="mt-4 text-xl font-semibold leading-7 text-stone-950">
-        {node.title}
-      </h2>
-
-      <dl className="mt-4 grid gap-3 text-sm">
-        <div>
-          <dt className="text-stone-600">建议阶段</dt>
-          <dd className="mt-1 font-medium text-stone-800">
-            {node.stage ?? "未指定"}
-          </dd>
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal-content mc-panel"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Title bar */}
+        <div className="flex items-center justify-between px-5 py-4 border-b-2 border-[#0a0a0a] bg-[#151515]">
+          <div className="flex items-center gap-3">
+            <span className="text-xl">
+              {status === "completed" ? "✅" :
+               status === "learning" ? "📖" : "📋"}
+            </span>
+            <h2 className="text-lg font-bold text-[#d8d8d8]">{node.title}</h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center text-[#666] hover:text-[#c8c8c8] text-lg font-bold transition"
+          >
+            ✕
+          </button>
         </div>
-        <div>
-          <dt className="text-stone-600">当前状态</dt>
-          <dd className="mt-1 font-medium text-stone-800">
-            {statusText[status]}
-          </dd>
+
+        {/* Content */}
+        <div className="grid grid-cols-2 gap-0">
+          {/* Left: Description */}
+          <div className="p-5 border-r-2 border-[#0a0a0a]">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#555] mb-3">
+              任务描述
+            </p>
+            <div className="space-y-3">
+              <div>
+                <span className="text-[11px] text-[#555]">阶段</span>
+                <p className="text-sm text-[#999] mt-0.5">
+                  {node.stage ?? "未指定"}
+                </p>
+              </div>
+              <div>
+                <span className="text-[11px] text-[#555]">当前状态</span>
+                <p className="text-sm text-[#999] mt-0.5">
+                  {statusIcons[status]} {statusText[status]}
+                </p>
+              </div>
+              <div>
+                <span className="text-[11px] text-[#555]">说明</span>
+                <p className="text-sm text-[#888] mt-0.5 leading-relaxed">
+                  {node.description}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Status buttons */}
+          <div className="p-5">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#555] mb-3">
+              标记状态
+            </p>
+            <div className="space-y-2">
+              {statusOptions.map((option) => {
+                const isActive = option === status;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => onStatusChange(option)}
+                    className={`w-full text-left px-3 py-3 text-sm font-semibold transition-all border-2 ${
+                      isActive
+                        ? `${statusColors[option]} ring-2 ${statusRingColors[option]} border-[#0a0a0a] border-t-[#3d3d3d] border-l-[#3d3d3d]`
+                        : "bg-[#1e1e1e] border-transparent text-[#707070] hover:bg-[#252525] hover:text-[#999]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{statusIcons[option]}</span>
+                      <span>{statusText[option]}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </dl>
 
-      <p className="mt-5 text-sm leading-6 text-stone-700">
-        {node.description}
-      </p>
-
-      <div className="mt-6">
-        <p className="text-sm font-medium text-stone-950">标记状态</p>
-        <div className="mt-3 grid gap-2">
-          {statusOptions.map((option) => {
-            const isSelected = option === status;
-
-            return (
-              <button
-                type="button"
-                key={option}
-                onClick={() => onStatusChange(option)}
-                className={`flex items-center justify-between rounded-md border px-3 py-2 text-sm font-medium transition hover:bg-[#f6efd9] ${
-                  statusButtonClasses[option]
-                } ${isSelected ? `ring-2 ${activeRingClasses[option]}` : ""}`}
-              >
-                <span>{statusText[option]}</span>
-                <span
-                  className={`h-2.5 w-2.5 rounded-full ${
-                    option === "completed"
-                      ? "bg-green-500"
-                      : option === "learning"
-                        ? "bg-blue-500"
-                        : "bg-slate-400"
-                  }`}
-                />
-              </button>
-            );
-          })}
+        {/* Bottom bar */}
+        <div className="px-5 py-3 border-t-2 border-[#0a0a0a] bg-[#151515] flex items-center justify-between">
+          <span className="text-[11px] text-[#555] font-mono">
+            #{node.id}
+          </span>
         </div>
       </div>
-    </aside>
+    </div>
   );
 }

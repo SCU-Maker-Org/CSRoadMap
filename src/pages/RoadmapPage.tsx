@@ -8,7 +8,7 @@ import { useProgress } from "../hooks/useProgress";
 import type { Roadmap } from "../types/roadmap";
 
 function getRoadmapById(id: string): Roadmap {
-  return roadmaps.find((roadmap) => roadmap.id === id) ?? roadmaps[0];
+  return roadmaps.find((r) => r.id === id) ?? roadmaps[0];
 }
 
 export function RoadmapPage() {
@@ -24,8 +24,7 @@ export function RoadmapPage() {
   const selectedNode = useMemo(
     () =>
       selectedNodeId
-        ? selectedRoadmap.nodes.find((node) => node.id === selectedNodeId) ??
-          null
+        ? selectedRoadmap.nodes.find((n) => n.id === selectedNodeId) ?? null
         : null,
     [selectedNodeId, selectedRoadmap.nodes],
   );
@@ -40,38 +39,42 @@ export function RoadmapPage() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="grid gap-5 xl:grid-cols-[260px_minmax(0,1fr)_320px]">
-        <RoadmapSelector
-          roadmaps={roadmaps}
-          selectedRoadmapId={selectedRoadmapId}
-          onSelect={handleSelectRoadmap}
-        />
-
-        <div className="grid min-w-0 gap-5">
-          <ProgressSummary
-            roadmap={selectedRoadmap}
-            getStatus={getStatus}
-            onResetProgress={resetProgress}
-          />
-          <RoadmapView
-            roadmap={selectedRoadmap}
-            getStatus={getStatus}
-            onSelectNode={setSelectedNodeId}
-            selectedNodeId={selectedNodeId}
+    <main className="flex-1 flex flex-col min-h-0">
+      {/* Main content: Left chapter panel + Center canvas */}
+      <div className="flex-1 flex min-h-0 p-3 gap-3">
+        <div className="w-[220px] flex-shrink-0">
+          <RoadmapSelector
+            roadmaps={roadmaps}
+            selectedRoadmapId={selectedRoadmapId}
+            onSelect={handleSelectRoadmap}
           />
         </div>
-
-        <SkillDetailPanel
-          node={selectedNode}
-          status={selectedStatus}
-          onStatusChange={(status) => {
-            if (selectedNode) {
-              setStatus(selectedNode.id, status);
-            }
-          }}
+        <RoadmapView
+          roadmap={selectedRoadmap}
+          getStatus={getStatus}
+          onSelectNode={setSelectedNodeId}
+          selectedNodeId={selectedNodeId}
         />
       </div>
+
+      {/* Bottom status bar */}
+      <ProgressSummary
+        roadmap={selectedRoadmap}
+        getStatus={getStatus}
+        onResetProgress={resetProgress}
+      />
+
+      {/* Quest detail modal */}
+      <SkillDetailPanel
+        node={selectedNode}
+        status={selectedStatus}
+        onStatusChange={(status) => {
+          if (selectedNode) {
+            setStatus(selectedNode.id, status);
+          }
+        }}
+        onClose={() => setSelectedNodeId(null)}
+      />
     </main>
   );
 }
