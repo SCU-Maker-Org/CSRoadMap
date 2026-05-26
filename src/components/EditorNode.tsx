@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 
 export interface EditorNodeData extends Record<string, unknown> {
@@ -8,9 +9,28 @@ export interface EditorNodeData extends Record<string, unknown> {
   icon?: string;
 }
 
-export function EditorNode({ data, selected }: NodeProps<Node<EditorNodeData>>) {
+interface EditorSelectionAPI {
+  selectNode: (nodeId: string) => void;
+  selectEdge: (edgeId: string) => void;
+}
+
+export const EditorSelectionContext = createContext<EditorSelectionAPI | null>(null);
+
+export function useEditorSelection() {
+  return useContext(EditorSelectionContext);
+}
+
+export function EditorNode({ id, data, selected }: NodeProps<Node<EditorNodeData>>) {
+  const ctx = useEditorSelection();
+
   return (
-    <div className={`editor-node${selected ? " selected" : ""}`}>
+    <div
+      className={`editor-node${selected ? " selected" : ""}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        ctx?.selectNode(id);
+      }}
+    >
       <Handle
         type="target"
         position={Position.Top}
@@ -23,7 +43,7 @@ export function EditorNode({ data, selected }: NodeProps<Node<EditorNodeData>>) 
             {data.title}
           </span>
           <span className="block text-[10px] text-[#555] font-mono">
-            #{data.id}
+            #{id}
           </span>
         </div>
       </div>

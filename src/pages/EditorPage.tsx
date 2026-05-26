@@ -9,7 +9,7 @@ import {
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorCanvas } from "../components/EditorCanvas";
 import { EditorNodePanel } from "../components/EditorNodePanel";
-import { type EditorNodeData } from "../components/EditorNode";
+import { EditorSelectionContext, type EditorNodeData } from "../components/EditorNode";
 import { roadmaps } from "../data/roadmaps";
 import { getDagreLayout } from "../utils/layout";
 import { pickIcon } from "../utils/icons";
@@ -237,52 +237,68 @@ export function EditorPage() {
     [],
   );
 
+  const selectionAPI = useMemo(
+    () => ({
+      selectNode: (nodeId: string) => {
+        setSelectedNodeId(nodeId);
+        setSelectedEdgeId(null);
+      },
+      selectEdge: (edgeId: string) => {
+        setSelectedEdgeId(edgeId);
+        setSelectedNodeId(null);
+      },
+    }),
+    [],
+  );
+
   return (
-    <main className="flex-1 flex flex-col min-h-0">
-      <div className="flex-1 flex min-h-0 p-3 gap-3">
-        <EditorSidebar
-          nodes={nodes}
-          edges={edges}
-          roadmapTitle={roadmapTitle}
-          roadmapId={roadmapId}
-          roadmapIcon={roadmapIcon}
-          selectedNodeId={selectedNodeId}
-          onMetadataChange={handleMetadataChange}
-          onAddNode={handleAddNode}
-          onAutoLayout={handleAutoLayout}
-          onLoadFile={handleLoadFile}
-          onLoadExisting={handleLoadExisting}
-          onExport={handleExport}
-          onDownload={handleDownload}
-          onSelectNode={(id) => {
-            setSelectedNodeId(id);
-            setSelectedEdgeId(null);
-          }}
-        />
-        <EditorCanvas
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={handleConnect}
-          onSelectNode={(id) => {
-            setSelectedNodeId(id);
-            setSelectedEdgeId(null);
-          }}
-          onSelectEdge={(id) => {
-            setSelectedEdgeId(id);
-            setSelectedNodeId(null);
-          }}
-        />
-        <EditorNodePanel
-          selectedNode={selectedNode}
-          selectedEdge={selectedEdge}
-          allNodes={nodes}
-          onUpdateNode={handleUpdateNode}
-          onDeleteNode={handleDeleteNode}
-          onDeleteEdge={handleDeleteEdge}
-        />
-      </div>
-    </main>
+    <EditorSelectionContext.Provider value={selectionAPI}>
+      <main className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex min-h-0 p-3 gap-3">
+          <EditorSidebar
+            nodes={nodes}
+            edges={edges}
+            roadmapTitle={roadmapTitle}
+            roadmapId={roadmapId}
+            roadmapIcon={roadmapIcon}
+            selectedNodeId={selectedNodeId}
+            onMetadataChange={handleMetadataChange}
+            onAddNode={handleAddNode}
+            onAutoLayout={handleAutoLayout}
+            onLoadFile={handleLoadFile}
+            onLoadExisting={handleLoadExisting}
+            onExport={handleExport}
+            onDownload={handleDownload}
+            onSelectNode={(id) => {
+              setSelectedNodeId(id);
+              setSelectedEdgeId(null);
+            }}
+          />
+          <EditorCanvas
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={handleConnect}
+            onSelectEdge={(id) => {
+              setSelectedEdgeId(id);
+              setSelectedNodeId(null);
+            }}
+            onDeselect={() => {
+              setSelectedNodeId(null);
+              setSelectedEdgeId(null);
+            }}
+          />
+          <EditorNodePanel
+            selectedNode={selectedNode}
+            selectedEdge={selectedEdge}
+            allNodes={nodes}
+            onUpdateNode={handleUpdateNode}
+            onDeleteNode={handleDeleteNode}
+            onDeleteEdge={handleDeleteEdge}
+          />
+        </div>
+      </main>
+    </EditorSelectionContext.Provider>
   );
 }

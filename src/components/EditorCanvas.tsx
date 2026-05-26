@@ -18,8 +18,8 @@ interface EditorCanvasProps {
   onNodesChange: OnNodesChange<Node<EditorNodeData>>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
-  onSelectNode: (nodeId: string | null) => void;
-  onSelectEdge: (edgeId: string | null) => void;
+  onSelectEdge: (edgeId: string) => void;
+  onDeselect: () => void;
 }
 
 export function EditorCanvas({
@@ -28,8 +28,8 @@ export function EditorCanvas({
   onNodesChange,
   onEdgesChange,
   onConnect,
-  onSelectNode,
   onSelectEdge,
+  onDeselect,
 }: EditorCanvasProps) {
   return (
     <div className="editor-canvas flex-1">
@@ -39,18 +39,8 @@ export function EditorCanvas({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onNodeClick={(_, node) => {
-          onSelectNode(node.id);
-          onSelectEdge(null);
-        }}
-        onEdgeClick={(_, edge) => {
-          onSelectEdge(edge.id);
-          onSelectNode(null);
-        }}
-        onPaneClick={() => {
-          onSelectNode(null);
-          onSelectEdge(null);
-        }}
+        onEdgeClick={(_, edge) => onSelectEdge(edge.id)}
+        onPaneClick={() => onDeselect()}
         nodeTypes={nodeTypes}
         nodesDraggable
         nodesConnectable
