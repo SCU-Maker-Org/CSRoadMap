@@ -486,32 +486,24 @@ textarea.prop-input {
     max-height: 90vh;
   }
 
-  /* Tighter hex nodes on small screens */
-  .quest-hex {
-    width: 78px;
-    height: 78px;
-  }
-  .quest-hex-inner {
-    width: 70px;
-    height: 70px;
-  }
-  .quest-hex-icon {
-    font-size: 22px;
-  }
-  .quest-hex-label {
-    font-size: 8px;
-  }
-
-  /* Smaller editor nodes on mobile */
-  .editor-node {
-    min-width: 120px;
-    padding: 6px 10px;
+  /* Ensure canvas fills available space */
+  .quest-canvas .react-flow {
+    min-height: 300px;
   }
 }
 
-/* Prevent canvas from being too tall on mobile landscape */
+/* Prevent canvas collapse on short screens (landscape phones) */
 @media (max-height: 500px) {
   .quest-canvas {
-    min-height: 200px;
+    min-height: 220px;
   }
+}
+
+/* Hide scrollbar for mobile tab strip */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

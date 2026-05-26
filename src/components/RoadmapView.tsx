@@ -114,14 +114,14 @@ export function RoadmapView({
 
   return (
     <section className="flex-1 flex flex-col min-h-0 mc-panel overflow-hidden">
-      <div className="px-4 py-3 border-b-2 border-[#0a0a0a] bg-[#151515] flex items-center gap-3">
+      <div className="hidden sm:flex px-4 py-3 border-b-2 border-[#0a0a0a] bg-[#151515] items-center gap-3">
         <span className="text-lg">{roadmap.icon ?? "📋"}</span>
         <div>
           <h2 className="text-sm font-bold text-[#c8c8c8]">{roadmap.title}</h2>
           <p className="text-[11px] text-[#666]">{roadmap.description}</p>
         </div>
       </div>
-      <div className="quest-canvas flex-1">
+      <div className="quest-canvas flex-1 min-h-0" style={{ minHeight: "280px" }}>
         <ReactFlow
           key={roadmap.id}
           nodes={skillNodes}
