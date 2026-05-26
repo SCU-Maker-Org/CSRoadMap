@@ -1,4 +1,4 @@
-type Page = "home" | "roadmap";
+type Page = "home" | "roadmap" | "editor";
 
 interface HeaderProps {
   currentPage: Page;
@@ -42,6 +42,17 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             }`}
           >
             Roadmap
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate("editor")}
+            className={`px-4 py-2 text-sm font-semibold transition border-2 ${
+              currentPage === "editor"
+                ? "bg-[#2a2a2a] border-[#0a0a0a] border-t-[#3d3d3d] border-l-[#3d3d3d] text-[#e8903c]"
+                : "border-transparent text-[#707070] hover:bg-[#222] hover:text-[#c8c8c8]"
+            }`}
+          >
+            编辑器
           </button>
         </nav>
       </div>

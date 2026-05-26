@@ -31,6 +31,7 @@ export interface RoadmapInput {
   description: string;
   icon?: string;
   nodes: Omit<RoadmapNode, "x" | "y">[];
+  edges?: RoadmapEdge[];
 }
 
 export type ProgressMap = Record<string, NodeStatus>;

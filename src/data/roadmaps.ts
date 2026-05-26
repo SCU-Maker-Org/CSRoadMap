@@ -17,7 +17,7 @@ function toRoadmap(input: RoadmapInput): Roadmap {
   return {
     ...input,
     nodes: input.nodes.map((node) => ({ ...node, x: 0, y: 0 })),
-    edges: buildEdges(input.nodes.map((n) => n.id)),
+    edges: input.edges ?? buildEdges(input.nodes.map((n) => n.id)),
   };
 }
 

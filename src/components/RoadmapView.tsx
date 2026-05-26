@@ -10,6 +10,8 @@ import {
   type NodeProps,
 } from "@xyflow/react";
 import { type NodeStatus, type Roadmap } from "../types/roadmap";
+import { getDagreLayout } from "../utils/layout";
+import { pickIcon } from "../utils/icons";
 
 interface RoadmapViewProps {
   roadmap: Roadmap;
@@ -44,47 +46,6 @@ const edgeColors: Record<NodeStatus, string> = {
   completed: "#4a8c3f",
 };
 
-function pickIcon(title: string): string {
-  const t = title.toLowerCase();
-  if (t.includes("python")) return "🐍";
-  if (t.includes("c++") || t.includes("cpp")) return "⚙️";
-  if (t.includes("java")) return "☕";
-  if (t.includes("linux")) return "🐧";
-  if (t.includes("git") || t.includes("github")) return "🔀";
-  if (t.includes("html") || t.includes("css")) return "🎨";
-  if (t.includes("javascript") || t.includes("js")) return "📜";
-  if (t.includes("typescript") || t.includes("ts")) return "📘";
-  if (t.includes("react") || t.includes("vue")) return "⚛️";
-  if (t.includes("api") || t.includes("http")) return "🔗";
-  if (t.includes("数据库") || t.includes("database") || t.includes("sql")) return "🗄️";
-  if (t.includes("docker")) return "🐳";
-  if (t.includes("网络") || t.includes("network")) return "🌐";
-  if (t.includes("安全") || t.includes("security") || t.includes("ctf")) return "🛡️";
-  if (t.includes("算法") || t.includes("algo") || t.includes("竞赛")) return "🏆";
-  if (t.includes("数据结构") || t.includes("ds")) return "🔢";
-  if (t.includes("搜索") || t.includes("search")) return "🔍";
-  if (t.includes("动态规划") || t.includes("dp")) return "🧩";
-  if (t.includes("图论") || t.includes("graph")) return "🕸️";
-  if (t.includes("数学") || t.includes("math")) return "📐";
-  if (t.includes("机器学习") || t.includes("ml")) return "🤖";
-  if (t.includes("深度学习") || t.includes("dl") || t.includes("pytorch")) return "🧠";
-  if (t.includes("numpy") || t.includes("pandas")) return "📊";
-  if (t.includes("部署") || t.includes("deploy")) return "🚀";
-  if (t.includes("命令行") || t.includes("cli") || t.includes("terminal")) return "💻";
-  if (t.includes("markdown")) return "📝";
-  if (t.includes("vscode") || t.includes("编辑器")) return "🖊️";
-  if (t.includes("身份认证") || t.includes("auth")) return "🔐";
-  if (t.includes("框架") || t.includes("framework") || t.includes("spring")) return "🏗️";
-  if (t.includes("stl")) return "📦";
-  if (t.includes("渗透") || t.includes("pentest")) return "🎯";
-  if (t.includes("cv") || t.includes("nlp") || t.includes("大模型")) return "👁️";
-  if (t.includes("web")) return "🕸️";
-  if (t.includes("训练") || t.includes("training")) return "⚡";
-  if (t.includes("专业认知") || t.includes("intro")) return "🎓";
-  if (t.includes("编程语言")) return "⌨️";
-  return "📋";
-}
-
 function SkillMapNode({ data }: NodeProps<Node<SkillNodeData>>) {
   const hexClass = `quest-hex quest-hex-${data.status}${data.selected ? " quest-hex-selected" : ""}`;
 
@@ -113,53 +74,43 @@ export function RoadmapView({
   onSelectNode,
   selectedNodeId,
 }: RoadmapViewProps) {
-  const skillNodes = useMemo<Node<SkillNodeData>[]>(
-    () =>
-      roadmap.nodes.map((node, index) => {
-        const status = getStatus(node.id);
-        const col = index % 3;
-        const row = Math.floor(index / 3);
+  const { nodes: skillNodes, edges: mainEdges } = useMemo(() => {
+    const rawNodes: Node<SkillNodeData>[] = roadmap.nodes.map((node) => {
+      const status = getStatus(node.id);
+      return {
+        id: node.id,
+        type: "skillMapNode",
+        position: { x: 0, y: 0 },
+        data: {
+          title: node.title,
+          stage: node.stage,
+          status,
+          selected: selectedNodeId === node.id,
+          icon: pickIcon(node.title, node.icon),
+        },
+        draggable: false,
+      };
+    });
 
-        return {
-          id: node.id,
-          type: "skillMapNode",
-          position: {
-            x: col * 200 + (row % 2 === 0 ? 0 : 100),
-            y: row * 180,
-          },
-          data: {
-            title: node.title,
-            stage: node.stage,
-            status,
-            selected: selectedNodeId === node.id,
-            icon: node.icon ?? pickIcon(node.title),
-          },
-          draggable: false,
-        };
-      }),
-    [getStatus, roadmap.nodes, selectedNodeId],
-  );
+    const rawEdges: Edge[] = roadmap.edges.map((edge) => {
+      const targetStatus = getStatus(edge.target);
+      return {
+        id: `${edge.source}-${edge.target}`,
+        source: edge.source,
+        target: edge.target,
+        type: "smoothstep",
+        zIndex: 5,
+        animated: targetStatus === "learning",
+        style: {
+          stroke: edgeColors[targetStatus],
+          strokeWidth: 3,
+          strokeLinecap: "round",
+        },
+      };
+    });
 
-  const mainEdges = useMemo<Edge[]>(
-    () =>
-      roadmap.edges.map((edge) => {
-        const targetStatus = getStatus(edge.target);
-        return {
-          id: `${edge.source}-${edge.target}`,
-          source: edge.source,
-          target: edge.target,
-          type: "smoothstep",
-          zIndex: 5,
-          animated: targetStatus === "learning",
-          style: {
-            stroke: edgeColors[targetStatus],
-            strokeWidth: 3,
-            strokeLinecap: "round",
-          },
-        };
-      }),
-    [roadmap.edges, getStatus],
-  );
+    return getDagreLayout(rawNodes, rawEdges, "TB");
+  }, [getStatus, roadmap.nodes, roadmap.edges, selectedNodeId]);
 
   return (
     <section className="flex-1 flex flex-col min-h-0 mc-panel overflow-hidden">

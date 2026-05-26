@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { Header } from "./components/Header";
 import { HomePage } from "./pages/HomePage";
 import { RoadmapPage } from "./pages/RoadmapPage";
+import { EditorPage } from "./pages/EditorPage";
 
-type Page = "home" | "roadmap";
+type Page = "home" | "roadmap" | "editor";
 
 function getInitialPage(): Page {
-  return window.location.pathname === "/roadmap" ? "roadmap" : "home";
+  const path = window.location.pathname;
+  if (path === "/roadmap") return "roadmap";
+  if (path === "/editor") return "editor";
+  return "home";
 }
 
 export default function App() {
@@ -21,7 +25,12 @@ export default function App() {
   }, []);
 
   function navigate(nextPage: Page) {
-    const nextPath = nextPage === "roadmap" ? "/roadmap" : "/";
+    const pathMap: Record<Page, string> = {
+      home: "/",
+      roadmap: "/roadmap",
+      editor: "/editor",
+    };
+    const nextPath = pathMap[nextPage];
     setPage(nextPage);
     if (window.location.pathname !== nextPath) {
       window.history.pushState(null, "", nextPath);
@@ -34,6 +43,8 @@ export default function App() {
       <div className="flex-1 flex flex-col">
         {page === "home" ? (
           <HomePage onStart={() => navigate("roadmap")} />
+        ) : page === "editor" ? (
+          <EditorPage />
         ) : (
           <RoadmapPage />
         )}
