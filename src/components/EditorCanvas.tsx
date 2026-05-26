@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import {
   Background,
   Controls,
@@ -32,22 +31,6 @@ export function EditorCanvas({
   onSelectNode,
   onSelectEdge,
 }: EditorCanvasProps) {
-  const handleSelectionChange = useCallback(
-    ({ nodes: selNodes, edges: selEdges }: { nodes: Node[]; edges: Edge[] }) => {
-      if (selNodes.length === 1) {
-        onSelectNode(selNodes[0].id);
-        onSelectEdge(null);
-      } else if (selEdges.length === 1) {
-        onSelectEdge(selEdges[0].id);
-        onSelectNode(null);
-      } else {
-        onSelectNode(null);
-        onSelectEdge(null);
-      }
-    },
-    [onSelectNode, onSelectEdge],
-  );
-
   return (
     <div className="editor-canvas flex-1">
       <ReactFlow
@@ -56,10 +39,22 @@ export function EditorCanvas({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onSelectionChange={handleSelectionChange}
+        onNodeClick={(_, node) => {
+          onSelectNode(node.id);
+          onSelectEdge(null);
+        }}
+        onEdgeClick={(_, edge) => {
+          onSelectEdge(edge.id);
+          onSelectNode(null);
+        }}
+        onPaneClick={() => {
+          onSelectNode(null);
+          onSelectEdge(null);
+        }}
         nodeTypes={nodeTypes}
         nodesDraggable
         nodesConnectable
+        nodeDragThreshold={5}
         deleteKeyCode="Delete"
         fitView
         fitViewOptions={{ padding: 0.2 }}

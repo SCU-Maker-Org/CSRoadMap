@@ -5,8 +5,8 @@ const NODE_WIDTH = 110;
 const NODE_HEIGHT = 110;
 
 const SNAKE_COLS = 3;
-const SNAKE_COL_GAP = 160;
-const SNAKE_ROW_GAP = 130;
+const SNAKE_COL_GAP = 210;
+const SNAKE_ROW_GAP = 180;
 
 function isLinearChain(edges: Edge[]): boolean {
   if (edges.length === 0) return true;
