@@ -49,7 +49,7 @@ export function HomePage({ onStart }: HomePageProps) {
         </div>
 
         <p className="mt-10 sm:mt-12 text-[10px] sm:text-[11px] text-[#444] font-mono">
-          v0.1.0 — MCP Edition
+          v1.1.0 — MCP Edition
         </p>
       </div>
     </main>
