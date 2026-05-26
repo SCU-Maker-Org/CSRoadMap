@@ -133,8 +133,8 @@ export function RoadmapView({
             }
           }}
           fitView
-          fitViewOptions={{ padding: 0.15 }}
-          minZoom={0.4}
+          fitViewOptions={{ padding: 0.15, maxZoom: 1.0 }}
+          minZoom={0.3}
           maxZoom={1.6}
           nodesDraggable={false}
           nodesConnectable={false}

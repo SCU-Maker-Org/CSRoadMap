@@ -41,13 +41,38 @@ export function RoadmapPage() {
   return (
     <main className="flex-1 flex flex-col min-h-0">
       {/* Main content: Left chapter panel + Center canvas */}
-      <div className="flex-1 flex min-h-0 p-3 gap-3">
-        <div className="w-[220px] flex-shrink-0">
-          <RoadmapSelector
-            roadmaps={roadmaps}
-            selectedRoadmapId={selectedRoadmapId}
-            onSelect={handleSelectRoadmap}
-          />
+      {/* Desktop: side-by-side. Mobile: stacked (tabs on top, canvas below) */}
+      <div className="flex-1 flex flex-col sm:flex-row min-h-0 p-2 sm:p-3 gap-2 sm:gap-3">
+        {/* Desktop: vertical sidebar. Mobile: horizontal scrollable tabs */}
+        <div className="sm:w-[220px] flex-shrink-0">
+          <div className="hidden sm:block h-full">
+            <RoadmapSelector
+              roadmaps={roadmaps}
+              selectedRoadmapId={selectedRoadmapId}
+              onSelect={handleSelectRoadmap}
+            />
+          </div>
+          {/* Mobile: horizontal scrollable chapter chips */}
+          <div className="sm:hidden flex gap-1.5 overflow-x-auto pb-1">
+            {roadmaps.map((roadmap) => {
+              const isSelected = roadmap.id === selectedRoadmapId;
+              return (
+                <button
+                  key={roadmap.id}
+                  type="button"
+                  onClick={() => handleSelectRoadmap(roadmap.id)}
+                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition border-2 whitespace-nowrap ${
+                    isSelected
+                      ? "bg-[#2a2a2a] border-[#0a0a0a] border-t-[#3d3d3d] border-l-[#3d3d3d] text-[#e8903c]"
+                      : "border-transparent text-[#707070] bg-[#1a1a1a]"
+                  }`}
+                >
+                  <span className="text-sm">{roadmap.icon ?? "📋"}</span>
+                  {roadmap.title}
+                </button>
+              );
+            })}
+          </div>
         </div>
         <RoadmapView
           roadmap={selectedRoadmap}

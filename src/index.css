@@ -471,3 +471,47 @@ textarea.prop-input {
 .emoji-chip-sm:hover {
   border-color: var(--mc-accent);
 }
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 639px) {
+  /* Larger touch targets for React Flow controls */
+  .react-flow__controls-button {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Full-width modal on mobile */
+  .modal-content {
+    width: 96vw !important;
+    max-height: 90vh;
+  }
+
+  /* Tighter hex nodes on small screens */
+  .quest-hex {
+    width: 78px;
+    height: 78px;
+  }
+  .quest-hex-inner {
+    width: 70px;
+    height: 70px;
+  }
+  .quest-hex-icon {
+    font-size: 22px;
+  }
+  .quest-hex-label {
+    font-size: 8px;
+  }
+
+  /* Smaller editor nodes on mobile */
+  .editor-node {
+    min-width: 120px;
+    padding: 6px 10px;
+  }
+}
+
+/* Prevent canvas from being too tall on mobile landscape */
+@media (max-height: 500px) {
+  .quest-canvas {
+    min-height: 200px;
+  }
+}

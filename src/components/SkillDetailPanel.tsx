@@ -45,13 +45,13 @@ export function SkillDetailPanel({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title bar */}
-        <div className="flex items-center justify-between px-5 py-4 border-b-2 border-[#0a0a0a] bg-[#151515]">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b-2 border-[#0a0a0a] bg-[#151515]">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-lg sm:text-xl">
               {status === "completed" ? "✅" :
                status === "learning" ? "📖" : "📋"}
             </span>
-            <h2 className="text-lg font-bold text-[#d8d8d8]">{node.title}</h2>
+            <h2 className="text-base sm:text-lg font-bold text-[#d8d8d8]">{node.title}</h2>
           </div>
           <button
             type="button"
@@ -62,10 +62,10 @@ export function SkillDetailPanel({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="grid grid-cols-2 gap-0">
-          {/* Left: Description */}
-          <div className="p-5 border-r-2 border-[#0a0a0a]">
+        {/* Content — 2 cols on desktop, stacked on mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
+          {/* Description */}
+          <div className="p-4 sm:p-5 sm:border-r-2 border-b-2 sm:border-b-0 border-[#0a0a0a]">
             <p className="text-[11px] font-bold uppercase tracking-wider text-[#555] mb-3">
               任务描述
             </p>
@@ -91,8 +91,8 @@ export function SkillDetailPanel({
             </div>
           </div>
 
-          {/* Right: Status buttons */}
-          <div className="p-5">
+          {/* Status buttons */}
+          <div className="p-4 sm:p-5">
             <p className="text-[11px] font-bold uppercase tracking-wider text-[#555] mb-3">
               标记状态
             </p>
@@ -122,8 +122,8 @@ export function SkillDetailPanel({
         </div>
 
         {/* Bottom bar */}
-        <div className="px-5 py-3 border-t-2 border-[#0a0a0a] bg-[#151515] flex items-center justify-between">
-          <span className="text-[11px] text-[#555] font-mono">
+        <div className="px-4 sm:px-5 py-2.5 sm:py-3 border-t-2 border-[#0a0a0a] bg-[#151515] flex items-center justify-between">
+          <span className="text-[10px] sm:text-[11px] text-[#555] font-mono">
             #{node.id}
           </span>
         </div>
