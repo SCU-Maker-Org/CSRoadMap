@@ -5,8 +5,9 @@ export interface RoadmapNode {
   title: string;
   description: string;
   stage?: string;
-  x: number;
-  y: number;
+  icon?: string;
+  x?: number;
+  y?: number;
 }
 
 export interface RoadmapEdge {
@@ -18,8 +19,19 @@ export interface Roadmap {
   id: string;
   title: string;
   description: string;
+  icon?: string;
   nodes: RoadmapNode[];
   edges: RoadmapEdge[];
+}
+
+/** JSON 文件中导入的原始路线数据（无需手动写 edges 和坐标） */
+export interface RoadmapInput {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string;
+  nodes: Omit<RoadmapNode, "x" | "y">[];
+  edges?: RoadmapEdge[];
 }
 
 export type ProgressMap = Record<string, NodeStatus>;

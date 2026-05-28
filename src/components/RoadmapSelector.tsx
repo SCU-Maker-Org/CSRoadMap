@@ -12,29 +12,36 @@ export function RoadmapSelector({
   onSelect,
 }: RoadmapSelectorProps) {
   return (
-    <aside className="rounded-lg border border-stone-300 bg-[#fffaf0] p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-stone-950">路线选择</h2>
-      <div className="mt-4 grid gap-2">
+    <aside className="mc-panel flex flex-col w-full">
+      <div className="px-4 py-3 border-b-2 border-[#0a0a0a] bg-[#151515]">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-[#666]">
+          章节选择
+        </h2>
+      </div>
+      <div className="flex-1 overflow-y-auto py-1">
         {roadmaps.map((roadmap) => {
           const isSelected = roadmap.id === selectedRoadmapId;
-
           return (
             <button
-              type="button"
               key={roadmap.id}
+              type="button"
               onClick={() => onSelect(roadmap.id)}
-              className={`rounded-md border px-3 py-3 text-left transition ${
-                isSelected
-                  ? "border-red-500 bg-red-50 text-red-800"
-                  : "border-stone-300 bg-[#fbf4df] text-stone-700 hover:border-stone-400 hover:bg-[#f6efd9]"
-              }`}
+              className={`chapter-btn ${isSelected ? "chapter-btn-active" : ""}`}
             >
-              <span className="block text-sm font-semibold">
-                {roadmap.title}
+              <span className="chapter-btn-icon">
+                {roadmap.icon ?? "📋"}
               </span>
-              <span className="mt-1 block text-xs leading-5 text-stone-600">
-                {roadmap.description}
-              </span>
+              <div className="min-w-0">
+                <span className="block text-[13px] font-semibold truncate">
+                  {roadmap.title}
+                </span>
+                <span className="block text-[11px] text-[#555] truncate mt-0.5">
+                  {roadmap.description}
+                </span>
+              </div>
+              {isSelected && (
+                <span className="ml-auto text-[#e8903c] text-xs">▶</span>
+              )}
             </button>
           );
         })}

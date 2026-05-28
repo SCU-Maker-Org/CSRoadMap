@@ -9,7 +9,9 @@ import {
   type Node,
   type NodeProps,
 } from "@xyflow/react";
-import { statusText, type NodeStatus, type Roadmap } from "../types/roadmap";
+import { type NodeStatus, type Roadmap } from "../types/roadmap";
+import { getDagreLayout } from "../utils/layout";
+import { pickIcon } from "../utils/icons";
 
 interface RoadmapViewProps {
   roadmap: Roadmap;
@@ -23,179 +25,48 @@ interface SkillNodeData extends Record<string, unknown> {
   stage?: string;
   status: NodeStatus;
   selected: boolean;
+  icon: string;
 }
 
-interface BranchNodeData extends Record<string, unknown> {
-  label: string;
-}
-
-const statusCircleClasses: Record<NodeStatus, string> = {
-  not_started: "border-stone-400 bg-stone-100 text-stone-700",
-  learning: "border-blue-500 bg-blue-100 text-blue-800",
-  completed: "border-green-600 bg-green-100 text-green-800",
+const statusBadgeClass: Record<NodeStatus, string> = {
+  not_started: "quest-hex-badge-not_started",
+  learning: "quest-hex-badge-learning",
+  completed: "quest-hex-badge-completed",
 };
 
-const statusDotClasses: Record<NodeStatus, string> = {
-  not_started: "bg-stone-400",
-  learning: "bg-blue-500",
-  completed: "bg-green-600",
-};
-
-const statusSymbols: Record<NodeStatus, string> = {
+const statusBadgeSymbol: Record<NodeStatus, string> = {
   not_started: "?",
-  learning: "学",
+  learning: "✦",
   completed: "✓",
 };
 
-const mainPathX = [370, 480, 420, 535, 390, 310, 455, 530, 445, 345];
-const verticalGap = 170;
-
-function invisibleHandleClasses() {
-  return "!h-2 !w-2 !border-none !bg-transparent";
-}
-
-function SkillMapNode({ data }: NodeProps<Node<SkillNodeData>>) {
-  return (
-    <div className="flex w-36 flex-col items-center text-center">
-      <Handle
-        type="target"
-        position={Position.Top}
-        className={invisibleHandleClasses()}
-      />
-      <div
-        className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-base font-semibold shadow-sm ${
-          statusCircleClasses[data.status]
-        } ${data.selected ? "ring-4 ring-red-300" : ""}`}
-      >
-        {statusSymbols[data.status]}
-      </div>
-      <div className="mt-2 max-w-36 rounded-md border border-stone-300 bg-[#fffaf0]/95 px-2 py-1 shadow-sm">
-        <p className="truncate text-xs font-semibold text-stone-900">
-          {data.title}
-        </p>
-        <div className="mt-1 flex items-center justify-center gap-1.5 text-[10px] leading-4 text-stone-600">
-          <span className={`h-1.5 w-1.5 rounded-full ${statusDotClasses[data.status]}`} />
-          <span>{data.stage ?? "未指定"}</span>
-          <span>{statusText[data.status]}</span>
-        </div>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className={invisibleHandleClasses()}
-      />
-    </div>
-  );
-}
-
-function BranchMapNode({ data }: NodeProps<Node<BranchNodeData>>) {
-  return (
-    <div className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-400 bg-[#ede4ce] text-[11px] font-semibold text-stone-600 shadow-sm">
-      <Handle
-        type="target"
-        position={Position.Top}
-        className={invisibleHandleClasses()}
-      />
-      {data.label}
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className={invisibleHandleClasses()}
-      />
-    </div>
-  );
-}
-
-const nodeTypes = {
-  skillMapNode: SkillMapNode,
-  branchMapNode: BranchMapNode,
+const edgeColors: Record<NodeStatus, string> = {
+  not_started: "#3a3a3a",
+  learning: "#c8a84e",
+  completed: "#4a8c3f",
 };
 
-function buildBranchNodes(roadmap: Roadmap): Node<BranchNodeData>[] {
-  return roadmap.nodes.flatMap((_, index) => {
-    const y = index * verticalGap + 70;
-    const leftX = 145 + (index % 3) * 46;
-    const rightX = 705 - (index % 3) * 52;
+function SkillMapNode({ data }: NodeProps<Node<SkillNodeData>>) {
+  const hexClass = `quest-hex quest-hex-${data.status}${data.selected ? " quest-hex-selected" : ""}`;
 
-    return [
-      {
-        id: `${roadmap.id}-left-${index}`,
-        type: "branchMapNode",
-        position: { x: leftX, y },
-        data: { label: index % 2 === 0 ? "?" : "□" },
-        selectable: false,
-        draggable: false,
-      },
-      {
-        id: `${roadmap.id}-right-${index}`,
-        type: "branchMapNode",
-        position: { x: rightX, y: y + 24 },
-        data: { label: index % 2 === 0 ? "○" : "?" },
-        selectable: false,
-        draggable: false,
-      },
-    ];
-  });
+  return (
+    <div className="flex flex-col items-center">
+      <Handle type="target" position={Position.Top} className="!bg-transparent !border-0" />
+      <div className={hexClass}>
+        <div className="quest-hex-inner">
+          <span className="quest-hex-icon">{data.icon}</span>
+          <span className="quest-hex-label text-[#c8c8c8]">{data.title}</span>
+        </div>
+        <div className={`quest-hex-badge ${statusBadgeClass[data.status]}`}>
+          {statusBadgeSymbol[data.status]}
+        </div>
+      </div>
+      <Handle type="source" position={Position.Bottom} className="!bg-transparent !border-0" />
+    </div>
+  );
 }
 
-function buildBranchEdges(roadmap: Roadmap): Edge[] {
-  const edges: Edge[] = [];
-
-  roadmap.nodes.forEach((node, index) => {
-    if (index > 0) {
-      edges.push({
-        id: `${roadmap.id}-left-${index - 1}-${index}`,
-        source: `${roadmap.id}-left-${index - 1}`,
-        target: `${roadmap.id}-left-${index}`,
-        type: "straight",
-        style: {
-          stroke: "#8d8674",
-          strokeWidth: 2,
-          strokeDasharray: "5 8",
-        },
-      });
-      edges.push({
-        id: `${roadmap.id}-right-${index - 1}-${index}`,
-        source: `${roadmap.id}-right-${index - 1}`,
-        target: `${roadmap.id}-right-${index}`,
-        type: "straight",
-        style: {
-          stroke: "#8d8674",
-          strokeWidth: 2,
-          strokeDasharray: "5 8",
-        },
-      });
-    }
-
-    if (index % 2 === 0) {
-      edges.push({
-        id: `${node.id}-left-branch`,
-        source: node.id,
-        target: `${roadmap.id}-left-${index}`,
-        type: "straight",
-        style: {
-          stroke: "#8d8674",
-          strokeWidth: 1.8,
-          strokeDasharray: "4 7",
-        },
-      });
-    } else {
-      edges.push({
-        id: `${node.id}-right-branch`,
-        source: node.id,
-        target: `${roadmap.id}-right-${index}`,
-        type: "straight",
-        style: {
-          stroke: "#8d8674",
-          strokeWidth: 1.8,
-          strokeDasharray: "4 7",
-        },
-      });
-    }
-  });
-
-  return edges;
-}
+const nodeTypes = { skillMapNode: SkillMapNode };
 
 export function RoadmapView({
   roadmap,
@@ -203,87 +74,73 @@ export function RoadmapView({
   onSelectNode,
   selectedNodeId,
 }: RoadmapViewProps) {
-  const skillNodes = useMemo<Node<SkillNodeData>[]>(
-    () =>
-      roadmap.nodes.map((node, index) => {
-        const status = getStatus(node.id);
+  const { nodes: skillNodes, edges: mainEdges } = useMemo(() => {
+    const rawNodes: Node<SkillNodeData>[] = roadmap.nodes.map((node) => {
+      const status = getStatus(node.id);
+      return {
+        id: node.id,
+        type: "skillMapNode",
+        position: { x: 0, y: 0 },
+        data: {
+          title: node.title,
+          stage: node.stage,
+          status,
+          selected: selectedNodeId === node.id,
+          icon: pickIcon(node.title, node.icon),
+        },
+        draggable: false,
+      };
+    });
 
-        return {
-          id: node.id,
-          type: "skillMapNode",
-          position: {
-            x: mainPathX[index % mainPathX.length],
-            y: index * verticalGap,
-          },
-          data: {
-            title: node.title,
-            stage: node.stage,
-            status,
-            selected: selectedNodeId === node.id,
-          },
-          draggable: false,
-        };
-      }),
-    [getStatus, roadmap.nodes, selectedNodeId],
-  );
-
-  const branchNodes = useMemo(() => buildBranchNodes(roadmap), [roadmap]);
-
-  const flowNodes = useMemo<Node[]>(
-    () => [...branchNodes, ...skillNodes],
-    [branchNodes, skillNodes],
-  );
-
-  const mainEdges = useMemo<Edge[]>(
-    () =>
-      roadmap.edges.map((edge) => ({
+    const rawEdges: Edge[] = roadmap.edges.map((edge) => {
+      const targetStatus = getStatus(edge.target);
+      return {
         id: `${edge.source}-${edge.target}`,
         source: edge.source,
         target: edge.target,
-        type: "straight",
-        zIndex: 10,
+        type: "smoothstep",
+        zIndex: 5,
+        animated: targetStatus === "learning",
         style: {
-          stroke: "#d43131",
-          strokeWidth: 4,
+          stroke: edgeColors[targetStatus],
+          strokeWidth: 3,
           strokeLinecap: "round",
         },
-      })),
-    [roadmap.edges],
-  );
+      };
+    });
 
-  const branchEdges = useMemo(() => buildBranchEdges(roadmap), [roadmap]);
-  const flowEdges = useMemo<Edge[]>(
-    () => [...branchEdges, ...mainEdges],
-    [branchEdges, mainEdges],
-  );
+    return getDagreLayout(rawNodes, rawEdges, "TB");
+  }, [getStatus, roadmap.nodes, roadmap.edges, selectedNodeId]);
 
   return (
-    <section className="overflow-hidden rounded-lg border border-stone-300 bg-[#f6efd9] shadow-sm">
-      <div className="border-b border-stone-300 bg-[#fffaf0] px-4 py-3">
-        <h2 className="text-sm font-semibold text-stone-950">Roadmap 图谱</h2>
-        <p className="mt-1 text-xs text-stone-600">{roadmap.description}</p>
+    <section className="flex-1 flex flex-col min-h-0 mc-panel overflow-hidden">
+      <div className="hidden sm:flex px-4 py-3 border-b-2 border-[#0a0a0a] bg-[#151515] items-center gap-3">
+        <span className="text-lg">{roadmap.icon ?? "📋"}</span>
+        <div>
+          <h2 className="text-sm font-bold text-[#c8c8c8]">{roadmap.title}</h2>
+          <p className="text-[11px] text-[#666]">{roadmap.description}</p>
+        </div>
       </div>
-      <div className="roadmap-map-surface h-[680px] w-full sm:h-[760px]">
+      <div className="quest-canvas flex-1 min-h-0" style={{ minHeight: "280px" }}>
         <ReactFlow
           key={roadmap.id}
-          nodes={flowNodes}
-          edges={flowEdges}
+          nodes={skillNodes}
+          edges={mainEdges}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => {
-            if (roadmap.nodes.some((item) => item.id === node.id)) {
+            if (roadmap.nodes.some((n) => n.id === node.id)) {
               onSelectNode(node.id);
             }
           }}
           fitView
-          fitViewOptions={{ padding: 0.08 }}
-          minZoom={0.35}
-          maxZoom={1.5}
+          fitViewOptions={{ padding: 0.15, maxZoom: 1.0 }}
+          minZoom={0.3}
+          maxZoom={1.6}
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable
-          proOptions={{ hideAttribution: true }}
         >
-          <Background gap={34} color="rgba(120, 113, 94, 0.22)" />
+          <Background gap={48} color="rgba(255,255,255,0.03)" />
           <Controls position="bottom-right" />
         </ReactFlow>
       </div>
