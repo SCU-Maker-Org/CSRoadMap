@@ -25,9 +25,9 @@ npm run dev
 
 浏览器访问 `http://localhost:5173` 即可。
 
-- `/` — 首页
-- `/roadmap` — 学习路线图
-- `/editor` — 可视化编辑器
+- `/#/` — 首页
+- `/#/roadmap` — 学习路线图
+- `/#/editor` — 可视化编辑器
 
 ## 构建
 
@@ -36,6 +36,28 @@ npm run build
 ```
 
 产物输出到 `dist/` 目录。
+
+## 部署到 GitHub Pages
+
+使用 GitHub Actions 自动构建并发布，无需单独购买服务器。
+
+1. 打开 GitHub 仓库的 **Settings → Pages**，将 **Build and deployment → Source** 设置为 **GitHub Actions**。
+2. 将本项目的修改（包含 `.github/workflows/deploy.yml`）提交并合并到 `main` 分支。
+3. 在仓库的 **Actions** 页面查看 **Deploy to GitHub Pages**，等待 `build` 和 `deploy` 成功。
+4. 在 **Settings → Pages** 查看最终访问地址。本仓库未配置自定义域名时，地址为 `https://scu-maker-org.github.io/CSRoadMap/`。
+
+以后每次向 `main` 推送修改都会自动更新网站，也可以在 Actions 页面手动运行工作流。工作流使用 GitHub 自动提供的令牌，无需手动添加部署 Secret。
+
+工作流根据 Pages 配置自动设置资源路径。页面使用 `#/roadmap`、`#/editor` 路由，支持在 GitHub Pages 上刷新和直接打开链接。线上请使用包含 `#` 的链接。
+
+本地模拟仓库子目录构建：
+
+```bash
+npm run build -- --base /CSRoadMap/
+npm run preview -- --base /CSRoadMap/
+```
+
+浏览器访问 `http://localhost:4173/CSRoadMap/#/roadmap`。
 
 ## 技术栈
 
@@ -96,7 +118,7 @@ src/
 
 ### 方法一：可视化编辑器（推荐）
 
-1. 运行 `npm run dev`，访问 `http://localhost:5173/editor`
+1. 运行 `npm run dev`，访问 `http://localhost:5173/#/editor`
 2. 在画布上添加节点、拖拽连线、编辑属性，搭建路线结构
 3. 点击「下载 .json」导出文件
 4. 将下载的文件放入 `src/data/roadmaps/` 目录
