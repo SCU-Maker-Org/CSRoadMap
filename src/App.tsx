@@ -7,7 +7,8 @@ import { EditorPage } from "./pages/EditorPage";
 type Page = "home" | "roadmap" | "editor";
 
 function getInitialPage(): Page {
-  const path = window.location.pathname;
+  // Hash routes also work when GitHub Pages serves the app in a repository subdirectory.
+  const path = window.location.hash.slice(1) || window.location.pathname;
   if (path === "/roadmap") return "roadmap";
   if (path === "/editor") return "editor";
   return "home";
@@ -21,7 +22,11 @@ export default function App() {
       setPage(getInitialPage());
     }
     window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    window.addEventListener("hashchange", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("hashchange", handlePopState);
+    };
   }, []);
 
   function navigate(nextPage: Page) {
@@ -30,9 +35,9 @@ export default function App() {
       roadmap: "/roadmap",
       editor: "/editor",
     };
-    const nextPath = pathMap[nextPage];
+    const nextPath = `${import.meta.env.BASE_URL}#${pathMap[nextPage]}`;
     setPage(nextPage);
-    if (window.location.pathname !== nextPath) {
+    if (`${window.location.pathname}${window.location.hash}` !== nextPath) {
       window.history.pushState(null, "", nextPath);
     }
   }
